@@ -21,41 +21,35 @@ const stepInfo: Record<number, { title: string; explanation: string }> = {
   },
 };
 
-const AssistantPanel = ({ currentStep, totalSteps }: AssistantPanelProps) => {
+const AssistantPanel = ({ currentStep }: AssistantPanelProps) => {
   const info = stepInfo[currentStep] || stepInfo[0];
-  const remaining = totalSteps - currentStep - 1;
-  const timeEstimate = remaining <= 1 ? "ca. 60 Sekunden" : `ca. ${remaining} Minuten`;
 
   return (
-    <div className="space-y-4">
-      {/* Time estimate */}
-      <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-        <span className="material-symbols-outlined text-lg text-primary">timer</span>
-        <span>
-          Nur noch <strong className="text-foreground">{timeEstimate}</strong> bis zu Ihrem Vergleich
-        </span>
-      </div>
-
+    <>
       {/* Context explanation */}
-      <div className="rounded-xl border border-border bg-card p-4">
-        <div className="mb-2 flex items-center gap-2">
-          <span className="material-symbols-outlined text-lg text-primary">auto_awesome</span>
-          <h4 className="text-sm font-semibold text-foreground">{info.title}</h4>
+      <div className="glass-panel rounded-2xl p-6">
+        <div className="mb-3 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <span className="material-symbols-outlined text-xl text-primary">auto_awesome</span>
+          </div>
+          <h4 className="font-display text-sm font-bold text-foreground">{info.title}</h4>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">{info.explanation}</p>
       </div>
 
       {/* Privacy note */}
-      <div className="rounded-xl border border-border bg-card p-4">
-        <div className="mb-2 flex items-center gap-2">
-          <span className="material-symbols-outlined text-lg text-primary">shield_person</span>
-          <h4 className="text-sm font-semibold text-foreground">Maximale Sicherheit</h4>
+      <div className="glass-panel rounded-2xl p-6">
+        <div className="mb-3 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+            <span className="material-symbols-outlined text-xl text-muted-foreground">shield_person</span>
+          </div>
+          <h4 className="font-display text-sm font-bold text-foreground">Maximale Sicherheit</h4>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
           Ihre Daten sind bei uns in guten Händen – verschlüsselt und nach deutschem DSGVO-Standard.
         </p>
       </div>
-    </div>
+    </>
   );
 };
 
