@@ -37,9 +37,7 @@ const MultiStepForm = () => {
 
   const handleNext = () => {
     if (step < TOTAL_STEPS - 1) setStep(step + 1);
-    else {
-      setSubmitted(true);
-    }
+    else setSubmitted(true);
   };
 
   const handleBack = () => {
@@ -57,9 +55,9 @@ const MultiStepForm = () => {
 
   if (submitted) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
-        <span className="material-symbols-outlined mb-4 text-5xl text-accent-teal">check_circle</span>
-        <h3 className="mb-2 text-2xl font-bold text-foreground">Vielen Dank, {data.name}!</h3>
+      <div className="glass-panel rounded-2xl p-8 text-center">
+        <span className="material-symbols-outlined mb-4 text-5xl text-primary">check_circle</span>
+        <h3 className="mb-2 font-display text-2xl font-bold text-foreground">Vielen Dank, {data.name}!</h3>
         <p className="text-muted-foreground">
           Ihre Angaben sind eingegangen. Wir erstellen Ihr persönliches Angebot und melden uns innerhalb von 24 Stunden bei Ihnen.
         </p>
@@ -70,18 +68,18 @@ const MultiStepForm = () => {
   const zahnOptionen = [
     {
       value: "hervorragend",
-      label: "Hervorragend",
-      desc: "Lückenloses Gebiss, keine laufenden Behandlungen.",
+      label: "Alles im grünen Bereich",
+      desc: "Keine fehlenden Zähne, regelmäßige Vorsorge.",
     },
     {
       value: "gepflegt",
-      label: "Gepflegt mit kleinen Makeln",
-      desc: "Einzelne Lücken oder bestehende Füllungen.",
+      label: "Kleinerer Handlungsbedarf",
+      desc: "1-2 Lücken oder älterer Zahnersatz vorhanden.",
     },
     {
       value: "behandlungsbedarf",
-      label: "Akuter Behandlungsbedarf",
-      desc: "Anstehende Zahnersatz-Maßnahmen oder Kieferorthopädie.",
+      label: "Aktuelle Behandlung",
+      desc: "Der Zahnarzt hat bereits Pläne für die Zukunft.",
     },
   ];
 
@@ -97,26 +95,30 @@ const MultiStepForm = () => {
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr,280px]">
       {/* Form */}
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+      <div className="glass-panel rounded-2xl p-6 sm:p-8">
         {/* Progress */}
         <div className="mb-6">
-          <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">Ihre Konfiguration</span>
-            <span>
+          <div className="mb-1 flex items-center justify-between text-sm">
+            <span className="font-medium text-muted-foreground">
               Schritt {step + 1} von {TOTAL_STEPS}
             </span>
           </div>
+          <h3 className="mb-3 font-display text-lg font-bold text-foreground">
+            {step === 0 && "Ihre Situation verstehen"}
+            {step === 1 && "Gewünschte Leistungen"}
+            {step === 2 && "Kontaktdaten"}
+          </h3>
           <Progress value={progress} className="h-1.5" />
         </div>
 
         {/* Step 0: Zahnzustand */}
         {step === 0 && (
           <div>
-            <h3 className="mb-1 text-lg font-bold text-foreground">
-              Wie beschreiben Sie Ihren aktuellen Zahnzustand?
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">
+              Wie steht es aktuell um Ihr Lächeln?
             </h3>
             <p className="mb-5 text-sm text-muted-foreground">
-              Wählen Sie die zutreffende Kategorie für eine präzise Einschätzung.
+              Um Ihnen die passendsten Tarife anzuzeigen, benötigen wir eine ehrliche Selbsteinschätzung.
             </p>
             <div className="space-y-3">
               {zahnOptionen.map((opt) => (
@@ -126,8 +128,8 @@ const MultiStepForm = () => {
                   onClick={() => setData({ ...data, zahnzustand: opt.value })}
                   className={`w-full rounded-xl border p-4 text-left transition-all ${
                     data.zahnzustand === opt.value
-                      ? "border-accent-teal bg-accent-teal/5 ring-1 ring-accent-teal"
-                      : "border-border hover:border-accent-gold/50"
+                      ? "border-primary bg-primary/5 ring-1 ring-primary"
+                      : "border-border hover:border-primary/30 hover:bg-primary/[0.02]"
                   }`}
                 >
                   <span className="font-semibold text-foreground">{opt.label}</span>
@@ -141,7 +143,7 @@ const MultiStepForm = () => {
         {/* Step 1: Leistungen */}
         {step === 1 && (
           <div>
-            <h3 className="mb-1 text-lg font-bold text-foreground">
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">
               Welche Leistungen sind Ihnen wichtig?
             </h3>
             <p className="mb-5 text-sm text-muted-foreground">
@@ -153,8 +155,8 @@ const MultiStepForm = () => {
                   key={l}
                   className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all ${
                     data.leistungen.includes(l)
-                      ? "border-accent-teal bg-accent-teal/5 ring-1 ring-accent-teal"
-                      : "border-border hover:border-accent-gold/50"
+                      ? "border-primary bg-primary/5 ring-1 ring-primary"
+                      : "border-border hover:border-primary/30"
                   }`}
                 >
                   <Checkbox
@@ -171,7 +173,7 @@ const MultiStepForm = () => {
         {/* Step 2: Kontakt */}
         {step === 2 && (
           <div>
-            <h3 className="mb-1 text-lg font-bold text-foreground">
+            <h3 className="mb-1 font-display text-base font-semibold text-foreground">
               Ihre Kontaktdaten für das Angebot
             </h3>
             <p className="mb-5 text-sm text-muted-foreground">
@@ -222,15 +224,16 @@ const MultiStepForm = () => {
             disabled={step === 0}
             className="text-muted-foreground"
           >
+            <span className="material-symbols-outlined mr-1 text-lg">arrow_back</span>
             Zurück
           </Button>
           <Button
             onClick={handleNext}
             disabled={!canNext()}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
           >
-            {step === TOTAL_STEPS - 1 ? "Angebot anfordern" : "Nächster Schritt"}
-            <span className="material-symbols-outlined ml-1 text-lg">arrow_forward</span>
+            {step === TOTAL_STEPS - 1 ? "Angebot anfordern" : "Weiter"}
+            <span className="material-symbols-outlined ml-1 text-lg">east</span>
           </Button>
         </div>
       </div>

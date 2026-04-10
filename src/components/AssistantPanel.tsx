@@ -5,12 +5,12 @@ interface AssistantPanelProps {
 
 const stepInfo: Record<number, { title: string; explanation: string }> = {
   0: {
-    title: "Warum diese Information?",
+    title: "Warum ist das wichtig?",
     explanation:
-      "Ihr aktueller Zahnstatus ist entscheidend für die Tarifwahl und die Vermeidung von Wartezeiten.",
+      "Ihr aktueller Status hilft uns, Tarife ohne Wartezeiten oder mit sofortiger Kostenübernahme zu finden.",
   },
   1: {
-    title: "Warum diese Information?",
+    title: "Warum ist das wichtig?",
     explanation:
       "Je nach gewünschten Leistungen können wir Tarife mit passendem Deckungsumfang identifizieren.",
   },
@@ -24,35 +24,35 @@ const stepInfo: Record<number, { title: string; explanation: string }> = {
 const AssistantPanel = ({ currentStep, totalSteps }: AssistantPanelProps) => {
   const info = stepInfo[currentStep] || stepInfo[0];
   const remaining = totalSteps - currentStep - 1;
-  const timeEstimate = remaining <= 1 ? "unter 1 Minute" : `ca. ${remaining} Minuten`;
+  const timeEstimate = remaining <= 1 ? "ca. 60 Sekunden" : `ca. ${remaining} Minuten`;
 
   return (
     <div className="space-y-4">
       {/* Time estimate */}
-      <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
-        <span className="material-symbols-outlined text-lg text-accent-gold">avg_time</span>
+      <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+        <span className="material-symbols-outlined text-lg text-primary">timer</span>
         <span>
-          Nur noch <strong className="text-foreground">{timeEstimate}</strong> bis zum persönlichen Angebot
+          Nur noch <strong className="text-foreground">{timeEstimate}</strong> bis zu Ihrem Vergleich
         </span>
       </div>
 
       {/* Context explanation */}
-      <div className="rounded-lg border border-border bg-card p-4">
+      <div className="rounded-xl border border-border bg-card p-4">
         <div className="mb-2 flex items-center gap-2">
-          <span className="material-symbols-outlined text-lg text-accent-teal">psychology</span>
+          <span className="material-symbols-outlined text-lg text-primary">auto_awesome</span>
           <h4 className="text-sm font-semibold text-foreground">{info.title}</h4>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">{info.explanation}</p>
       </div>
 
       {/* Privacy note */}
-      <div className="rounded-lg border border-border bg-card p-4">
+      <div className="rounded-xl border border-border bg-card p-4">
         <div className="mb-2 flex items-center gap-2">
-          <span className="material-symbols-outlined text-lg text-accent-teal">shield_person</span>
-          <h4 className="text-sm font-semibold text-foreground">Diskretion garantiert</h4>
+          <span className="material-symbols-outlined text-lg text-primary">shield_person</span>
+          <h4 className="text-sm font-semibold text-foreground">Maximale Sicherheit</h4>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Ihre Daten werden nach höchsten Sicherheitsstandards verschlüsselt und absolut vertraulich behandelt.
+          Ihre Daten sind bei uns in guten Händen – verschlüsselt und nach deutschem DSGVO-Standard.
         </p>
       </div>
     </div>
