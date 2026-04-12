@@ -47,10 +47,10 @@ def build_anliegen_summary(payload: dict[str, Any]) -> str:
         return isinstance(val, str) and val.strip().lower() == "ja"
 
     parts: list[str] = []
-    if g("laufende_behandlungen"):
-        parts.append(f"Laufende Behandlung: {g('laufende_behandlungen')}")
-    if g("geplante_behandlungen"):
-        parts.append(f"Geplant/angeraten: {g('geplante_behandlungen')}")
+    if yes("laufende_behandlungen"):
+        parts.append("Laufende Zahnbehandlung")
+    if yes("geplante_behandlungen"):
+        parts.append("Behandlung geplant/angeraten")
     if yes("hkp_erstellt"):
         parts.append("HKP liegt vor")
     if yes("behandlung_begonnen"):

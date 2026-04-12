@@ -4,14 +4,29 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface FormData {
-  zahnzustand: string;
-  leistungen: string[];
+  // Step 0 — Behandlungen
+  laufende_behandlungen: string;
+  geplante_behandlungen: string;
+  hkp_erstellt: string;
+  behandlung_begonnen: string;
+  // Step 1 — Fehlende Zähne
+  fehlende_zaehne: string;
+  ersatz_typ: string[];
+  fehlend_seit: string;
+  // Step 2 — Zahnfleisch & Kiefer
+  parodontitis_behandelt: string;
+  zahnfleischerkrankung: string;
+  kieferfehlstellung: string;
+  kfo_angeraten: string;
+  // Step 3 — Kontakt
   name: string;
-  email: string;
-  telefon: string;
+  telnr: string;
+  mail: string;
+  einverstaendnis: string;
 }
 
-const TOTAL_STEPS = 3;
+const TOTAL_STEPS = 4;
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 interface MultiStepFormProps {
   onStepChange?: (step: number) => void;
@@ -20,12 +35,24 @@ interface MultiStepFormProps {
 const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const [data, setData] = useState<FormData>({
-    zahnzustand: "",
-    leistungen: [],
+    laufende_behandlungen: "",
+    geplante_behandlungen: "",
+    hkp_erstellt: "",
+    behandlung_begonnen: "",
+    fehlende_zaehne: "",
+    ersatz_typ: [],
+    fehlend_seit: "",
+    parodontitis_behandelt: "",
+    zahnfleischerkrankung: "",
+    kieferfehlstellung: "",
+    kfo_angeraten: "",
     name: "",
-    email: "",
-    telefon: "",
+    telnr: "",
+    mail: "",
+    einverstaendnis: "",
   });
 
   const progress = ((step + 1) / TOTAL_STEPS) * 100;
@@ -36,27 +63,54 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
   };
 
   const canNext = () => {
-    if (step === 0) return data.zahnzustand !== "";
-    if (step === 1) return data.leistungen.length > 0;
-    if (step === 2) return data.name !== "" && data.email !== "";
+    if (step === 0) return data.laufende_behandlungen !== "" && data.geplante_behandlungen !== "";
+    if (step === 1) return data.fehlende_zaehne !== "";
+    if (step === 2) return data.parodontitis_behandelt !== "" && data.kieferfehlstellung !== "";
+    if (step === 3) return data.name !== "" && data.telnr !== "";
     return false;
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    setError("");
+    try {
+      const payload = {
+        ...data,
+        ersatz_typ: data.ersatz_typ.join(", "),
+      };
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const apiKey = import.meta.env.VITE_FORM_API_KEY;
+      if (apiKey) headers["X-Api-Key"] = apiKey;
+
+      const res = await fetch(`${API_URL}/webhook/form`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Server-Fehler (${res.status})`);
+      setSubmitted(true);
+    } catch (e: any) {
+      setError(e.message || "Unbekannter Fehler");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleNext = () => {
     if (step < TOTAL_STEPS - 1) updateStep(step + 1);
-    else setSubmitted(true);
+    else handleSubmit();
   };
 
   const handleBack = () => {
     if (step > 0) updateStep(step - 1);
   };
 
-  const toggleLeistung = (l: string) => {
+  const toggleErsatzTyp = (typ: string) => {
     setData((d) => ({
       ...d,
-      leistungen: d.leistungen.includes(l)
-        ? d.leistungen.filter((x) => x !== l)
-        : [...d.leistungen, l],
+      ersatz_typ: d.ersatz_typ.includes(typ)
+        ? d.ersatz_typ.filter((x) => x !== typ)
+        : [...d.ersatz_typ, typ],
     }));
   };
 
@@ -64,46 +118,57 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
     return (
       <div className="glass-panel rounded-2xl p-8 text-center">
         <span className="material-symbols-outlined mb-4 text-5xl text-primary">check_circle</span>
-        <h3 className="mb-2 font-display text-2xl font-bold text-foreground">Vielen Dank, {data.name}!</h3>
+        <h3 className="mb-2 font-display text-2xl font-bold text-foreground">
+          Vielen Dank, {data.name}!
+        </h3>
         <p className="text-muted-foreground">
-          Ihre Angaben sind eingegangen. Wir erstellen Ihr persönliches Angebot und melden uns innerhalb von 24 Stunden bei Ihnen.
+          Ihre Angaben sind eingegangen. Wir melden uns zeitnah bei Ihnen
+          {data.einverstaendnis === "ja" ? " per WhatsApp" : " per E-Mail"}.
         </p>
       </div>
     );
   }
 
-  const stepTitles = ["Ihre Situation verstehen", "Gewünschte Leistungen", "Kontaktdaten"];
-
-  const zahnOptionen = [
-    {
-      value: "hervorragend",
-      label: "Alles im grünen Bereich",
-      desc: "Keine fehlenden Zähne, regelmäßige Vorsorge.",
-    },
-    {
-      value: "gepflegt",
-      label: "Kleinerer Handlungsbedarf",
-      desc: "1–2 Lücken oder älterer Zahnersatz vorhanden.",
-    },
-    {
-      value: "behandlungsbedarf",
-      label: "Aktuelle Behandlung",
-      desc: "Der Zahnarzt hat bereits Pläne für die Zukunft.",
-    },
+  const stepTitles = [
+    "Aktuelle Behandlungen",
+    "Fehlende Zähne",
+    "Zahnfleisch & Kiefer",
+    "Ihre Kontaktdaten",
   ];
 
-  const leistungenOptionen = [
-    "Zahnersatz (Kronen, Brücken)",
-    "Implantate",
-    "Professionelle Zahnreinigung",
-    "Kieferorthopädie",
-    "Hochwertige Füllungen",
-    "Wurzelbehandlungen",
-  ];
+  const JaNeinFrage = ({
+    label,
+    value,
+    onChange,
+  }: {
+    label: string;
+    value: string;
+    onChange: (v: string) => void;
+  }) => (
+    <div className="mb-4">
+      <p className="mb-2 text-sm font-medium text-foreground">{label}</p>
+      <div className="flex gap-3">
+        {["ja", "nein"].map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => onChange(v)}
+            className={`rounded-xl border px-6 py-2.5 text-sm font-medium transition-all ${
+              value === v
+                ? "border-primary bg-primary/5 text-primary shadow-sm"
+                : "border-border text-muted-foreground hover:border-primary/30"
+            }`}
+          >
+            {v === "ja" ? "Ja" : "Nein"}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="glass-panel overflow-hidden rounded-2xl">
-      {/* Header with warm background */}
+      {/* Header */}
       <div className="bg-[hsl(var(--warm-accent))] px-6 py-5 sm:px-8">
         <div className="mb-1 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           <span>Schritt {step + 1} von {TOTAL_STEPS}</span>
@@ -120,91 +185,118 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
         </div>
         <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
           <span className="material-symbols-outlined text-sm">timer</span>
-          <span>Nur noch ca. 60 Sekunden bis zu Ihrem Vergleich</span>
+          <span>Nur noch ca. {Math.max(30, (TOTAL_STEPS - step) * 30)} Sekunden</span>
         </div>
       </div>
 
-      {/* Form Content */}
+      {/* Content */}
       <div className="px-6 py-6 sm:px-8">
-        {/* Step 0: Zahnzustand */}
+        {/* Step 0 — Behandlungen */}
         {step === 0 && (
           <div>
-            <h3 className="mb-1 font-display text-lg font-bold text-foreground">
-              Wie steht es aktuell um Ihr Lächeln?
-            </h3>
-            <p className="mb-5 text-sm text-muted-foreground">
-              Um Ihnen die passendsten Tarife anzuzeigen, benötigen wir eine ehrliche Selbsteinschätzung.
-            </p>
-            <div className="space-y-3">
-              {zahnOptionen.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setData({ ...data, zahnzustand: opt.value })}
-                  className={`flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-all ${
-                    data.zahnzustand === opt.value
-                      ? "border-primary bg-primary/5 shadow-sm"
-                      : "border-border hover:border-primary/30"
-                  }`}
-                >
-                  <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-                    data.zahnzustand === opt.value
-                      ? "border-primary"
-                      : "border-muted-foreground/30"
-                  }`}>
-                    {data.zahnzustand === opt.value && (
-                      <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-                    )}
-                  </div>
-                  <div>
-                    <span className="font-semibold text-foreground">{opt.label}</span>
-                    <span className="mt-0.5 block text-sm text-muted-foreground">{opt.desc}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+            <JaNeinFrage
+              label="Bestehen derzeit laufende Zahnbehandlungen?"
+              value={data.laufende_behandlungen}
+              onChange={(v) => setData({ ...data, laufende_behandlungen: v })}
+            />
+            <JaNeinFrage
+              label="Sind Behandlungen geplant oder angeraten?"
+              value={data.geplante_behandlungen}
+              onChange={(v) => setData({ ...data, geplante_behandlungen: v })}
+            />
+            <JaNeinFrage
+              label="Wurde ein Heil- und Kostenplan (HKP) erstellt?"
+              value={data.hkp_erstellt}
+              onChange={(v) => setData({ ...data, hkp_erstellt: v })}
+            />
+            <JaNeinFrage
+              label="Sind bereits Behandlungen begonnen, aber noch nicht abgeschlossen?"
+              value={data.behandlung_begonnen}
+              onChange={(v) => setData({ ...data, behandlung_begonnen: v })}
+            />
           </div>
         )}
 
-        {/* Step 1: Leistungen */}
+        {/* Step 1 — Fehlende Zähne */}
         {step === 1 && (
           <div>
-            <h3 className="mb-1 font-display text-lg font-bold text-foreground">
-              Welche Leistungen sind Ihnen wichtig?
-            </h3>
-            <p className="mb-5 text-sm text-muted-foreground">
-              Wählen Sie alle Bereiche aus, die für Sie relevant sind.
-            </p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {leistungenOptionen.map((l) => (
-                <label
-                  key={l}
-                  className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all ${
-                    data.leistungen.includes(l)
-                      ? "border-primary bg-primary/5 shadow-sm"
-                      : "border-border hover:border-primary/30"
-                  }`}
-                >
-                  <Checkbox
-                    checked={data.leistungen.includes(l)}
-                    onCheckedChange={() => toggleLeistung(l)}
-                  />
-                  <span className="text-sm font-medium text-foreground">{l}</span>
-                </label>
-              ))}
+            <div className="mb-4">
+              <label className="mb-1.5 block text-sm font-medium text-foreground">
+                Wie viele Zähne fehlen aktuell? *
+              </label>
+              <Input
+                placeholder="z.B. 0, 2, keine"
+                value={data.fehlende_zaehne}
+                onChange={(e) => setData({ ...data, fehlende_zaehne: e.target.value })}
+              />
+            </div>
+
+            <div className="mb-4">
+              <p className="mb-2 text-sm font-medium text-foreground">
+                Sind fehlende Zähne bereits ersetzt? Wenn ja, wie?
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {["Kronen", "Brücken", "Implantate", "Prothesen"].map((typ) => (
+                  <label
+                    key={typ}
+                    className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all ${
+                      data.ersatz_typ.includes(typ)
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <Checkbox
+                      checked={data.ersatz_typ.includes(typ)}
+                      onCheckedChange={() => toggleErsatzTyp(typ)}
+                    />
+                    <span className="text-sm font-medium text-foreground">{typ}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="mb-1.5 block text-sm font-medium text-foreground">
+                Seit wann fehlen die Zähne?
+              </label>
+              <Input
+                placeholder="z.B. seit 3 Jahren, seit Kindheit"
+                value={data.fehlend_seit}
+                onChange={(e) => setData({ ...data, fehlend_seit: e.target.value })}
+              />
             </div>
           </div>
         )}
 
-        {/* Step 2: Kontakt */}
+        {/* Step 2 — Zahnfleisch & Kiefer */}
         {step === 2 && (
           <div>
-            <h3 className="mb-1 font-display text-lg font-bold text-foreground">
-              Ihre Kontaktdaten für das Angebot
-            </h3>
-            <p className="mb-5 text-sm text-muted-foreground">
-              Auf Basis Ihrer Angaben erstellen wir ein persönliches Angebot.
-            </p>
+            <JaNeinFrage
+              label="Wurde in den letzten 2–5 Jahren eine Parodontitis behandelt?"
+              value={data.parodontitis_behandelt}
+              onChange={(v) => setData({ ...data, parodontitis_behandelt: v })}
+            />
+            <JaNeinFrage
+              label="Besteht aktuell eine Zahnfleischerkrankung?"
+              value={data.zahnfleischerkrankung}
+              onChange={(v) => setData({ ...data, zahnfleischerkrankung: v })}
+            />
+            <JaNeinFrage
+              label="Besteht bereits eine Zahn- oder Kieferfehlstellung?"
+              value={data.kieferfehlstellung}
+              onChange={(v) => setData({ ...data, kieferfehlstellung: v })}
+            />
+            <JaNeinFrage
+              label="Wurde eine kieferorthopädische Behandlung angeraten?"
+              value={data.kfo_angeraten}
+              onChange={(v) => setData({ ...data, kfo_angeraten: v })}
+            />
+          </div>
+        )}
+
+        {/* Step 3 — Kontakt */}
+        {step === 3 && (
+          <div>
             <div className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-foreground">
@@ -218,27 +310,41 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  E-Mail-Adresse *
+                  Telefonnummer *
                 </label>
                 <Input
-                  type="email"
-                  placeholder="max@beispiel.de"
-                  value={data.email}
-                  onChange={(e) => setData({ ...data, email: e.target.value })}
+                  type="tel"
+                  placeholder="+49 151 1234567"
+                  value={data.telnr}
+                  onChange={(e) => setData({ ...data, telnr: e.target.value })}
                 />
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  Telefon (optional)
+                  E-Mail-Adresse
                 </label>
                 <Input
-                  type="tel"
-                  placeholder="+49 123 456789"
-                  value={data.telefon}
-                  onChange={(e) => setData({ ...data, telefon: e.target.value })}
+                  type="email"
+                  placeholder="max@beispiel.de"
+                  value={data.mail}
+                  onChange={(e) => setData({ ...data, mail: e.target.value })}
                 />
               </div>
+              <div className="rounded-xl border border-border p-4">
+                <JaNeinFrage
+                  label="Dürfen wir Sie per WhatsApp kontaktieren?"
+                  value={data.einverstaendnis}
+                  onChange={(v) => setData({ ...data, einverstaendnis: v })}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Bei „Ja" erhalten Sie eine kurze, persönliche Nachricht auf WhatsApp.
+                  Bei „Nein" kontaktieren wir Sie per E-Mail (sofern angegeben).
+                </p>
+              </div>
             </div>
+            {error && (
+              <p className="mt-4 text-sm font-medium text-destructive">{error}</p>
+            )}
           </div>
         )}
 
@@ -254,12 +360,18 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
           </button>
           <Button
             onClick={handleNext}
-            disabled={!canNext()}
+            disabled={!canNext() || submitting}
             size="lg"
             className="rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
           >
-            {step === TOTAL_STEPS - 1 ? "Angebot anfordern" : "Weiter"}
-            <span className="material-symbols-outlined ml-1 text-lg">east</span>
+            {submitting
+              ? "Wird gesendet..."
+              : step === TOTAL_STEPS - 1
+                ? "Absenden"
+                : "Weiter"}
+            {!submitting && (
+              <span className="material-symbols-outlined ml-1 text-lg">east</span>
+            )}
           </Button>
         </div>
       </div>
