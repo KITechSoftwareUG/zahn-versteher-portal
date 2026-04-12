@@ -122,8 +122,13 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
           Vielen Dank, {data.name}!
         </h3>
         <p className="text-muted-foreground">
-          Ihre Angaben sind eingegangen. Wir melden uns zeitnah bei Ihnen
-          {data.einverstaendnis === "ja" ? " per WhatsApp" : " per E-Mail"}.
+          Ihre Angaben sind eingegangen. Auf Basis Ihrer zahnmedizinischen Situation
+          erstelle ich Ihnen ein persönliches Angebot für die passende
+          Zahnzusatzversicherung und melde mich
+          {data.einverstaendnis === "ja" ? " per WhatsApp" : " per E-Mail"} bei Ihnen.
+        </p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Alexander Fürtbauer | VVO Haberger AG
         </p>
       </div>
     );
@@ -185,7 +190,7 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
         </div>
         <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
           <span className="material-symbols-outlined text-sm">timer</span>
-          <span>Nur noch ca. {Math.max(30, (TOTAL_STEPS - step) * 30)} Sekunden</span>
+          <span>Nur noch ca. {Math.max(30, (TOTAL_STEPS - step) * 30)} Sekunden bis zu Ihrem persönlichen Angebot</span>
         </div>
       </div>
 

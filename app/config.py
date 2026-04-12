@@ -24,26 +24,18 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     contact_delay_minutes: int = 3
 
-    # Optional shared-secret für POST /webhook/form. Wenn gesetzt, muss die
-    # Website den Header X-Api-Key mitschicken. Wenn None/leer, ist der
-    # Endpunkt offen (nur für Dev empfohlen).
+    # Optional shared-secret für POST /webhook/form
     form_api_key: str | None = None
 
     # Anthropic
     anthropic_api_key: str
-    # Stabiler Alias ohne Datum-Suffix. Für teurere/neuere Modelle z.B.
-    # 'claude-sonnet-4-6' oder 'claude-opus-4-6' setzen.
     anthropic_model: str = "claude-sonnet-4-5"
 
     # WhatsApp Cloud API
     wa_graph_api_version: str = "v21.0"
     wa_phone_number_id: str
     wa_access_token: str
-    # Beim Webhook-Setup im Meta Business Manager frei wählbar, hier spiegeln
-    # wir den hub.challenge nur wenn der verify_token übereinstimmt.
     wa_verify_token: str
-    # Meta App Secret (Settings → Basic → App Secret). Wird zur HMAC-Prüfung
-    # der X-Hub-Signature-256 auf dem Webhook-POST benötigt. KRITISCH.
     wa_app_secret: str
     wa_template_name: str = "lead_intro_de"
     wa_template_lang: str = "de"
@@ -54,9 +46,10 @@ class Settings(BaseSettings):
     gmail_from_address: str
     gmail_from_name: str = ""
 
-    # Praxis
-    praxis_name: str = "Musterpraxis"
-    praxis_stadt: str = ""
+    # Berater-Branding (für AI-Prompts, Auto-Reply, Templates)
+    berater_name: str = "Alexander Fürtbauer"
+    berater_firma: str = "VVO Haberger AG"
+    berater_typ: str = "Zahnzusatzversicherungen"
 
     @property
     def postgres_dsn(self) -> str:

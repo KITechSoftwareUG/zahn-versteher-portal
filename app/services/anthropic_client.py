@@ -1,4 +1,11 @@
-"""Anthropic Claude Client für personalisierte Texte (WhatsApp-Kurztext + E-Mail)."""
+"""Anthropic Claude Client für personalisierte Texte (WhatsApp-Kurztext + E-Mail).
+
+Kontext: Zahnzusatzversicherungs-Funnel. Ein Finanzberater (Alexander Fürtbauer /
+VVO Haberger AG) sammelt über ein Formular die zahnmedizinische Anamnese potenzieller
+Kunden. Basierend auf diesen Daten erstellt die AI eine personalisierte Ansprache —
+entweder als WhatsApp-Kurztext oder als E-Mail — die dem Lead signalisiert, dass
+sein konkreter Fall verstanden wurde, und ihn zu einem Beratungsgespräch einlädt.
+"""
 from __future__ import annotations
 
 import json
@@ -23,19 +30,28 @@ def _get_client() -> AsyncAnthropic:
 
 WHATSAPP_SYSTEM = (
     "Du schreibst eine extrem kurze, freundliche WhatsApp-Erstnachricht "
-    "(max. 2 Sätze, max. 280 Zeichen) im Namen einer Zahnarztpraxis. "
+    "(max. 2 Sätze, max. 280 Zeichen) im Namen eines Finanzberaters für "
+    "Zahnzusatzversicherungen. "
     "Du sprichst den Lead mit Vornamen an, nimmst genau EIN konkretes Detail "
-    "aus seiner Anamnese auf und schlägst einen unverbindlichen Rückruf vor. "
-    "Kein Fachjargon, kein Verkaufston, maximal ein 🙂. "
+    "aus seiner zahnmedizinischen Anamnese auf und zeigst, dass du seinen Fall "
+    "verstehst. Dann lädst du zu einem kurzen, unverbindlichen Beratungsgespräch "
+    "ein, um den passenden Tarif zu finden. "
+    "Kein Fachjargon, kein Verkaufsdruck, kein Versprechen konkreter Leistungen. "
+    "Maximal ein 🙂. "
     "Antworte NUR mit dem Nachrichtentext, ohne Vorwort, ohne Erklärung."
 )
 
 MAIL_SYSTEM_TEMPLATE = (
-    "Du schreibst eine personalisierte deutsche E-Mail im Namen der Zahnarztpraxis "
-    "'{praxis_name}'{stadt_teil} an einen Lead, der KEINE WhatsApp-Kommunikation wünscht. "
-    "Tonalität: professionell, warm, kein Verkauf. Sprich den Lead mit Vornamen an, "
-    "nimm 1–2 Anamnese-Punkte konkret auf, biete einen unverbindlichen Rückruf oder "
-    "Termin an, schliesse mit 'Mit freundlichen Grüssen, Praxis {praxis_name}'. "
+    "Du schreibst eine personalisierte deutsche E-Mail im Namen von "
+    "{berater_name} ({berater_firma}), einem Finanzberater für {berater_typ}. "
+    "Der Empfänger hat über ein Online-Formular seine zahnmedizinische Situation "
+    "geschildert, aber KEINE WhatsApp-Kontaktaufnahme gewünscht. "
+    "Tonalität: professionell, warm, vertrauenswürdig, kein Verkaufsdruck. "
+    "Sprich den Lead mit Vornamen an, nimm 1–2 konkrete Punkte aus seiner "
+    "Anamnese auf, zeige dass du seinen Fall verstehst, und lade ihn zu einem "
+    "unverbindlichen Beratungsgespräch ein (telefonisch oder per Video). "
+    "Keine konkreten Tarife oder Preise nennen — das kommt erst im Gespräch. "
+    "Schliesse mit 'Mit freundlichen Grüßen, {berater_name} | {berater_firma}'. "
     "Kein Markdown, keine Emojis. "
     "Antworte NUR mit gültigem JSON (ohne Codefence): "
     '{{"subject": "...", "body": "..."}}. Der Body darf \\n für Zeilenumbrüche nutzen.'
@@ -52,7 +68,11 @@ async def generate_whatsapp_text(*, name: str, anliegen_summary: str) -> str:
         messages=[
             {
                 "role": "user",
-                "content": f"Name: {name}\nAnamnese: {anliegen_summary or '(keine Angabe)'}",
+                "content": (
+                    f"Berater: {settings.berater_name}\n"
+                    f"Name des Leads: {name}\n"
+                    f"Zahnmedizinische Anamnese: {anliegen_summary or '(keine Angabe)'}"
+                ),
             }
         ],
     )
@@ -65,9 +85,10 @@ async def generate_mail(*, name: str, mail: str, anliegen_summary: str) -> tuple
     """Returns (subject, body). Parses JSON from the model response."""
     client = _get_client()
     settings = get_settings()
-    stadt_teil = f" in {settings.praxis_stadt}" if settings.praxis_stadt else ""
     system = MAIL_SYSTEM_TEMPLATE.format(
-        praxis_name=settings.praxis_name, stadt_teil=stadt_teil
+        berater_name=settings.berater_name,
+        berater_firma=settings.berater_firma,
+        berater_typ=settings.berater_typ,
     )
     message = await client.messages.create(
         model=settings.anthropic_model,
@@ -77,15 +98,14 @@ async def generate_mail(*, name: str, mail: str, anliegen_summary: str) -> tuple
             {
                 "role": "user",
                 "content": (
-                    f"Name: {name}\nMail: {mail}\n"
-                    f"Anamnese: {anliegen_summary or '(keine Angabe)'}"
+                    f"Name des Leads: {name}\nMail: {mail}\n"
+                    f"Zahnmedizinische Anamnese: {anliegen_summary or '(keine Angabe)'}"
                 ),
             }
         ],
     )
     raw = "".join(block.text for block in message.content if block.type == "text").strip()
 
-    # Robust JSON-Extraktion: falls das Modell doch mal Codefence o.ä. einstreut
     json_match = re.search(r"\{.*\}", raw, re.DOTALL)
     if not json_match:
         raise ValueError(f"model returned no JSON: {raw[:200]}")

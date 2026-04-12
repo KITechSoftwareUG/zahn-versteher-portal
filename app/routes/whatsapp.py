@@ -45,13 +45,16 @@ async def verify(
 def _auto_reply_text() -> str:
     s = get_settings()
     return (
-        "Hallo und vielen Dank für deine Nachricht! 🙂\n\n"
-        "Schön, dass du dich bei uns meldest. Damit wir dir weiterhelfen "
-        "können, beantworte uns bitte kurz: Worum geht es bei deinem Anliegen, "
-        "und welcher Zeitraum würde dir für einen ersten Termin passen?\n\n"
-        "Wir melden uns dann zeitnah mit den nächsten Schritten.\n\n"
-        f"Praxis {s.praxis_name}"
-    )
+        "Hallo und vielen Dank für Ihre Nachricht! 🙂\n\n"
+        "Hier ist {name} von der {firma}. Ich bin Ihr persönlicher Berater "
+        "für {typ}.\n\n"
+        "Damit ich Ihnen den passenden Tarif empfehlen kann, füllen Sie gerne "
+        "unser kurzes Formular aus — oder schreiben Sie mir hier direkt, "
+        "was Ihre zahnmedizinische Situation ist.\n\n"
+        "Ich melde mich zeitnah mit einem unverbindlichen Vorschlag.\n\n"
+        "Herzliche Grüße,\n"
+        "{name} | {firma}"
+    ).format(name=s.berater_name, firma=s.berater_firma, typ=s.berater_typ)
 
 
 @router.post("/webhook/whatsapp")
