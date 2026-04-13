@@ -128,7 +128,7 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
           {data.einverstaendnis === "ja" ? " per WhatsApp" : " per E-Mail"} bei Ihnen.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Alexander Fürtbauer | VVO Haberger AG
+          Alexander Fürtbauer | ExpatVantage
         </p>
       </div>
     );

@@ -1,11 +1,13 @@
 import MultiStepForm from "@/components/MultiStepForm";
 import AssistantPanel from "@/components/AssistantPanel";
+// HINWEIS: Dieses Bild zeigt aktuell noch den alten Platzhalter. Bitte durch
+// ein echtes Foto von Alexander Fürtbauer ersetzen (gleicher Pfad/Dateiname).
 import portraitImg from "@/assets/vermittler-portrait.png";
 import { useState } from "react";
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const totalSteps = 3;
+  const totalSteps = 4;
 
   return (
     <div className="min-h-screen">
@@ -13,9 +15,9 @@ const Index = () => {
       <header className="sticky top-0 z-50 glass-panel rounded-none">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-2xl text-primary">dentistry</span>
+            <span className="material-symbols-outlined text-2xl text-primary">health_and_safety</span>
             <span className="font-display text-lg font-bold text-foreground">
-              Zahnzusatz-Experte
+              Expat<span className="gradient-text">Vantage</span>
             </span>
           </div>
           <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
@@ -25,9 +27,9 @@ const Index = () => {
           </nav>
           <a
             href="#formular"
-            className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
+            className="rounded-full gradient-btn px-5 py-2 text-sm font-semibold"
           >
-            Gratis Beratung
+            Kostenlose Erstberatung
           </a>
         </div>
       </header>
@@ -41,7 +43,7 @@ const Index = () => {
             <div className="relative mb-8 overflow-hidden rounded-2xl shadow-xl">
               <img
                 src={portraitImg}
-                alt="Thomas Weber – Versicherungsexperte"
+                alt="Alexander Fürtbauer – Finanzberater bei ExpatVantage"
                 className="h-[420px] w-full object-cover"
               />
               <div className="broker-card-gradient absolute inset-0" />
@@ -49,22 +51,26 @@ const Index = () => {
                 <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-primary">
                   Ihr persönlicher Berater
                 </p>
-                <h2 className="font-display text-xl font-bold text-white">Thomas Weber</h2>
-                <p className="mt-0.5 text-sm text-white/80">Experte für ganzheitlichen Zahnschutz</p>
+                <h2 className="font-display text-xl font-bold text-white">Alexander Fürtbauer</h2>
+                <p className="mt-0.5 text-sm text-white/80">Finanzberater · ExpatVantage</p>
               </div>
             </div>
 
             {/* Headline */}
             <div className="hidden lg:block">
-              <h1 className="font-display text-4xl font-extrabold leading-tight text-foreground xl:text-[2.75rem]">
-                Ihr Lächeln{" "}
+              <p className="mb-3 text-xs font-bold uppercase tracking-widest text-primary">
+                Zahnzusatzversicherung
+              </p>
+              <h1 className="font-display text-4xl font-extrabold leading-tight text-foreground xl:text-[2.6rem]">
+                Zahnersatz kostet bis zu{" "}
+                <span className="gradient-text">6.000 €</span>
                 <br />
-                verdient den{" "}
-                <br />
-                <span className="text-primary">besten Schutz.</span>
+                – die Kasse zahlt nur einen Bruchteil.
               </h1>
               <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-                Gemeinsam finden wir die Absicherung, die wirklich zu Ihnen passt. Seit über einem Jahrzehnt begleite ich meine Kunden unabhängig und menschlich zu ihrem perfekten Tarif.
+                Ich finde für Sie die passende Zahnzusatzversicherung – unabhängig,
+                ohne Verkaufsdruck und auch dann, wenn Sie als Expat erst seit
+                Kurzem in Deutschland leben. In 60 Sekunden zum persönlichen Angebot.
               </p>
             </div>
           </div>
@@ -73,12 +79,15 @@ const Index = () => {
           <div id="formular">
             {/* Mobile headline */}
             <div className="mb-8 lg:hidden">
+              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-primary">
+                Zahnzusatzversicherung
+              </p>
               <h1 className="font-display text-2xl font-extrabold leading-tight text-foreground sm:text-3xl">
-                Ihr Lächeln verdient den{" "}
-                <span className="text-primary">besten Schutz.</span>
+                Zahnersatz kostet bis zu{" "}
+                <span className="gradient-text">6.000 €</span> – die Kasse zahlt nur einen Bruchteil.
               </h1>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Gemeinsam finden wir die Absicherung, die wirklich zu Ihnen passt.
+                In 60 Sekunden zum unverbindlichen Angebot – unabhängig und ohne Verkaufsdruck.
               </p>
             </div>
             <MultiStepForm onStepChange={setCurrentStep} />
@@ -91,16 +100,18 @@ const Index = () => {
           <div className="glass-panel rounded-2xl p-6">
             <div className="mb-3 flex items-center gap-2">
               <span className="material-symbols-outlined text-xl text-primary">verified</span>
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Expertise</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Erfahrung</span>
             </div>
             <p className="font-display text-2xl font-bold text-foreground">10+ Jahre</p>
+            <p className="mt-1 text-xs text-muted-foreground">in der deutschen Finanz- und Versicherungsbranche</p>
           </div>
           <div className="glass-panel rounded-2xl p-6">
             <div className="mb-3 flex items-center gap-2">
-              <span className="material-symbols-outlined text-xl text-primary">favorite</span>
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Vertrauen</span>
+              <span className="material-symbols-outlined text-xl text-primary">handshake</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Unabhängig</span>
             </div>
-            <p className="font-display text-2xl font-bold text-foreground">500+ Kunden</p>
+            <p className="font-display text-2xl font-bold text-foreground">100 % objektiv</p>
+            <p className="mt-1 text-xs text-muted-foreground">kein Verkaufsdruck, kein Provisions-Bias</p>
           </div>
 
           {/* Assistant Cards */}
@@ -113,12 +124,12 @@ const Index = () => {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6">
           <div className="flex items-center gap-1.5">
             <span className="material-symbols-outlined text-base">copyright</span>
-            <span>2024 Zahnzusatz-Experte Thomas Weber — Persönlich. Ehrlich. Unabhängig.</span>
+            <span>2024 ExpatVantage · Alexander Fürtbauer — Finanzberatung für Expats in Deutschland</span>
           </div>
           <div className="flex gap-4">
+            <a href="https://expatvantage.de" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">expatvantage.de</a>
             <a href="#" className="text-primary hover:underline">Impressum</a>
             <a href="#" className="text-primary hover:underline">Datenschutz</a>
-            <a href="#" className="text-primary hover:underline">AGB</a>
           </div>
         </div>
       </footer>

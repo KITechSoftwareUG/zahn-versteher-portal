@@ -5,19 +5,24 @@ interface AssistantPanelProps {
 
 const stepInfo: Record<number, { title: string; explanation: string }> = {
   0: {
-    title: "Warum ist das wichtig?",
+    title: "Warum wir das fragen",
     explanation:
-      "Ihr aktueller Status hilft uns, Tarife ohne Wartezeiten oder mit sofortiger Kostenübernahme zu finden.",
+      "Aktuelle und geplante Behandlungen entscheiden über Wartezeiten und Sofort­leistungen. Mit diesen Angaben finde ich Tarife, die wirklich zu Ihrer Situation passen.",
   },
   1: {
-    title: "Warum ist das wichtig?",
+    title: "Fehlende Zähne richtig einordnen",
     explanation:
-      "Je nach gewünschten Leistungen können wir Tarife mit passendem Deckungsumfang identifizieren.",
+      "Bei fehlenden Zähnen prüfen Versicherer, ob es sich um eine fortbestehende Lücke handelt. Das beeinflusst, welche Tarife für Sie überhaupt offen sind.",
   },
   2: {
+    title: "Zahnfleisch & Kiefer im Blick",
+    explanation:
+      "Parodontitis und Zahnfehl­stellungen werden in vielen Tarifen explizit ausgeschlossen oder mit Wartezeiten belegt. Mit diesen Angaben filtern wir gezielt vor.",
+  },
+  3: {
     title: "Fast geschafft!",
     explanation:
-      "Mit Ihren Kontaktdaten erstellen wir Ihr persönliches Angebot und melden uns zeitnah bei Ihnen.",
+      "Mit Ihren Kontaktdaten erstelle ich ein persönliches Angebot. Auf Wunsch melde ich mich per WhatsApp – schnell und unkompliziert.",
   },
 };
 
@@ -46,7 +51,8 @@ const AssistantPanel = ({ currentStep }: AssistantPanelProps) => {
           <h4 className="font-display text-sm font-bold text-foreground">Maximale Sicherheit</h4>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Ihre Daten sind bei uns in guten Händen – verschlüsselt und nach deutschem DSGVO-Standard.
+          Ihre Daten verlassen den deutschen Server nicht und werden nach DSGVO-Standard
+          verschlüsselt verarbeitet. Keine Weitergabe an Dritte.
         </p>
       </div>
     </>

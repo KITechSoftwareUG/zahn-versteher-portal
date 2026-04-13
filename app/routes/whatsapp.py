@@ -46,14 +46,16 @@ def _auto_reply_text() -> str:
     s = get_settings()
     return (
         "Hallo und vielen Dank für Ihre Nachricht! 🙂\n\n"
-        "Hier ist {name} von der {firma}. Ich bin Ihr persönlicher Berater "
-        "für {typ}.\n\n"
-        "Damit ich Ihnen den passenden Tarif empfehlen kann, füllen Sie gerne "
-        "unser kurzes Formular aus — oder schreiben Sie mir hier direkt, "
-        "was Ihre zahnmedizinische Situation ist.\n\n"
-        "Ich melde mich zeitnah mit einem unverbindlichen Vorschlag.\n\n"
+        "Hier ist {name} von {firma}. Ich helfe Ihnen, die passende "
+        "{typ} zu finden – unabhängig und ohne Verkaufsdruck.\n\n"
+        "Damit ich Ihnen einen konkreten Tarif vorschlagen kann, erzählen "
+        "Sie mir gerne kurz: Wie ist Ihre aktuelle zahnmedizinische "
+        "Situation, und gibt es geplante Behandlungen?\n\n"
+        "Alternativ können Sie unser Formular ausfüllen – dauert ca. 60 "
+        "Sekunden und ich melde mich mit einem persönlichen Vorschlag.\n\n"
         "Herzliche Grüße,\n"
-        "{name} | {firma}"
+        "{name}\n"
+        "{firma}"
     ).format(name=s.berater_name, firma=s.berater_firma, typ=s.berater_typ)
 
 

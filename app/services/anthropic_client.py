@@ -1,10 +1,16 @@
 """Anthropic Claude Client für personalisierte Texte (WhatsApp-Kurztext + E-Mail).
 
-Kontext: Zahnzusatzversicherungs-Funnel. Ein Finanzberater (Alexander Fürtbauer /
-VVO Haberger AG) sammelt über ein Formular die zahnmedizinische Anamnese potenzieller
-Kunden. Basierend auf diesen Daten erstellt die AI eine personalisierte Ansprache —
-entweder als WhatsApp-Kurztext oder als E-Mail — die dem Lead signalisiert, dass
-sein konkreter Fall verstanden wurde, und ihn zu einem Beratungsgespräch einlädt.
+Kontext: Zahnzusatzversicherungs-Funnel von ExpatVantage (Alexander Fürtbauer).
+ExpatVantage ist eine Finanzberatung in Stuttgart, die sich auf Expats in
+Deutschland spezialisiert hat — Steueroptimierung, Vermögensaufbau, Versicherungen.
+Dieser Funnel ist ein Sub-Produkt: Zahnzusatzversicherungen für Menschen, die mit
+der schwachen GKV-Erstattung beim Zahnersatz konfrontiert sind. Zielgruppe sind
+sowohl Expats als auch deutsche Kunden.
+
+Über das Formular werden zahnmedizinische Anamnese-Daten erfasst (laufende/geplante
+Behandlungen, fehlende Zähne, Parodontitis, Kieferfehlstellungen). Die AI erstellt
+basierend darauf eine persönliche Ansprache, die dem Lead signalisiert, dass sein
+konkreter Fall verstanden wurde, und ihn zu einer kostenlosen Erstberatung einlädt.
 """
 from __future__ import annotations
 
@@ -30,28 +36,29 @@ def _get_client() -> AsyncAnthropic:
 
 WHATSAPP_SYSTEM = (
     "Du schreibst eine extrem kurze, freundliche WhatsApp-Erstnachricht "
-    "(max. 2 Sätze, max. 280 Zeichen) im Namen eines Finanzberaters für "
-    "Zahnzusatzversicherungen. "
+    "(max. 2 Sätze, max. 280 Zeichen) im Namen eines Finanzberaters von "
+    "ExpatVantage, der sich auf Zahnzusatzversicherungen spezialisiert hat. "
     "Du sprichst den Lead mit Vornamen an, nimmst genau EIN konkretes Detail "
     "aus seiner zahnmedizinischen Anamnese auf und zeigst, dass du seinen Fall "
-    "verstehst. Dann lädst du zu einem kurzen, unverbindlichen Beratungsgespräch "
-    "ein, um den passenden Tarif zu finden. "
-    "Kein Fachjargon, kein Verkaufsdruck, kein Versprechen konkreter Leistungen. "
-    "Maximal ein 🙂. "
+    "verstehst. Dann lädst du zu einer kurzen, kostenlosen Erstberatung ein, "
+    "um den passenden Tarif zu finden. "
+    "Sie-Form (formell). Kein Fachjargon, kein Verkaufsdruck, kein Versprechen "
+    "konkreter Leistungen oder Preise. Maximal ein 🙂. "
     "Antworte NUR mit dem Nachrichtentext, ohne Vorwort, ohne Erklärung."
 )
 
 MAIL_SYSTEM_TEMPLATE = (
     "Du schreibst eine personalisierte deutsche E-Mail im Namen von "
-    "{berater_name} ({berater_firma}), einem Finanzberater für {berater_typ}. "
+    "{berater_name} von {berater_firma}, einer Finanzberatung in Stuttgart, "
+    "spezialisiert auf {berater_typ} für Expats und deutsche Kunden. "
     "Der Empfänger hat über ein Online-Formular seine zahnmedizinische Situation "
     "geschildert, aber KEINE WhatsApp-Kontaktaufnahme gewünscht. "
-    "Tonalität: professionell, warm, vertrauenswürdig, kein Verkaufsdruck. "
+    "Tonalität: professionell, warm, vertrauenswürdig, Sie-Form, kein Verkaufsdruck. "
     "Sprich den Lead mit Vornamen an, nimm 1–2 konkrete Punkte aus seiner "
-    "Anamnese auf, zeige dass du seinen Fall verstehst, und lade ihn zu einem "
-    "unverbindlichen Beratungsgespräch ein (telefonisch oder per Video). "
+    "Anamnese auf, zeige dass du seinen Fall verstehst, und lade ihn zu einer "
+    "kostenlosen Erstberatung ein (telefonisch oder per Video). "
     "Keine konkreten Tarife oder Preise nennen — das kommt erst im Gespräch. "
-    "Schliesse mit 'Mit freundlichen Grüßen, {berater_name} | {berater_firma}'. "
+    "Schließe mit 'Mit freundlichen Grüßen,\\n{berater_name}\\n{berater_firma}'. "
     "Kein Markdown, keine Emojis. "
     "Antworte NUR mit gültigem JSON (ohne Codefence): "
     '{{"subject": "...", "body": "..."}}. Der Body darf \\n für Zeilenumbrüche nutzen.'

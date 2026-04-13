@@ -48,7 +48,7 @@ class Settings(BaseSettings):
 
     # Berater-Branding (für AI-Prompts, Auto-Reply, Templates)
     berater_name: str = "Alexander Fürtbauer"
-    berater_firma: str = "VVO Haberger AG"
+    berater_firma: str = "ExpatVantage"
     berater_typ: str = "Zahnzusatzversicherungen"
 
     @property
