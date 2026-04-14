@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
+import { getWhatsAppLink } from "@/lib/whatsapp";
 
 interface FormData {
   // Step 0 — Behandlungen
@@ -62,17 +64,29 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
     onStepChange?.(newStep);
   };
 
+  const emailLooksValid = (m: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.trim());
+  const phoneLooksValid = (p: string) => p.replace(/\D/g, "").length >= 6;
+
   const canNext = () => {
     if (step === 0) return data.laufende_behandlungen !== "" && data.geplante_behandlungen !== "";
     if (step === 1) return data.fehlende_zaehne !== "";
     if (step === 2) return data.parodontitis_behandelt !== "" && data.kieferfehlstellung !== "";
-    if (step === 3) return data.name !== "" && data.telnr !== "";
+    if (step === 3) {
+      if (data.name.trim() === "" || !phoneLooksValid(data.telnr)) return false;
+      if (data.einverstaendnis === "") return false;
+      // Ohne WhatsApp-Consent brauchen wir eine valide Mail für Kontakt.
+      if (data.einverstaendnis === "nein" && !emailLooksValid(data.mail)) return false;
+      if (data.mail.trim() !== "" && !emailLooksValid(data.mail)) return false;
+      return true;
+    }
     return false;
   };
 
   const handleSubmit = async () => {
     setSubmitting(true);
     setError("");
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
       const payload = {
         ...data,
@@ -86,12 +100,28 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
-      if (!res.ok) throw new Error(`Server-Fehler (${res.status})`);
+      if (!res.ok) {
+        if (res.status >= 500) {
+          throw new Error("Der Server ist gerade nicht erreichbar. Bitte versuchen Sie es in einem Moment erneut.");
+        }
+        if (res.status === 401) {
+          throw new Error("Die Anfrage wurde abgelehnt. Bitte kontaktieren Sie uns direkt per WhatsApp.");
+        }
+        throw new Error(`Ihre Angaben konnten nicht übermittelt werden (Code ${res.status}).`);
+      }
       setSubmitted(true);
     } catch (e: any) {
-      setError(e.message || "Unbekannter Fehler");
+      if (e?.name === "AbortError") {
+        setError("Die Verbindung zum Server hat zu lange gedauert. Bitte prüfen Sie Ihre Internetverbindung und versuchen es erneut.");
+      } else if (e instanceof TypeError) {
+        setError("Keine Verbindung zum Server. Bitte prüfen Sie Ihre Internetverbindung.");
+      } else {
+        setError(e?.message || "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
+      }
     } finally {
+      clearTimeout(timeout);
       setSubmitting(false);
     }
   };
@@ -171,6 +201,10 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
     </div>
   );
 
+  const whatsappHref = getWhatsAppLink(
+    `Ich möchte lieber direkt schreiben statt das Formular auszufüllen.`,
+  );
+
   return (
     <div className="glass-panel overflow-hidden rounded-2xl">
       {/* Header */}
@@ -192,6 +226,30 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
           <span className="material-symbols-outlined text-sm">timer</span>
           <span>Nur noch ca. {Math.max(30, (TOTAL_STEPS - step) * 30)} Sekunden bis zu Ihrem persönlichen Angebot</span>
         </div>
+
+        {/* Shortcut: direkt auf WhatsApp chatten — für alle die keine Lust
+            haben das komplette Formular durchzugehen. Nur sichtbar wenn
+            VITE_WHATSAPP_NUMBER gesetzt ist. */}
+        {whatsappHref && (
+          <div className="mt-4 flex flex-col items-stretch gap-2 rounded-xl border border-white/70 bg-white/70 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+            <div className="flex items-start gap-2 text-xs text-muted-foreground sm:items-center">
+              <span className="material-symbols-outlined text-base text-primary">forum</span>
+              <span>
+                <span className="font-semibold text-foreground">Keine Lust auf Fragen?</span>{" "}
+                Schreiben Sie mir direkt auf WhatsApp.
+              </span>
+            </div>
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-[#25D366] px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:shadow-md hover:shadow-[#25D366]/30"
+            >
+              <WhatsAppIcon className="h-4 w-4 fill-white" />
+              Direkt auf WhatsApp
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -343,8 +401,18 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
                   Bei „Ja" erhalten Sie eine kurze, persönliche Nachricht auf WhatsApp.
-                  Bei „Nein" kontaktieren wir Sie per E-Mail (sofern angegeben).
+                  Bei „Nein" kontaktieren wir Sie per E-Mail (bitte dann oben E-Mail angeben).
                 </p>
+                {data.einverstaendnis === "nein" && !emailLooksValid(data.mail) && (
+                  <p className="mt-2 text-xs font-medium text-destructive">
+                    Bitte geben Sie eine gültige E-Mail-Adresse an, damit wir Sie erreichen können.
+                  </p>
+                )}
+                {data.mail.trim() !== "" && !emailLooksValid(data.mail) && data.einverstaendnis !== "nein" && (
+                  <p className="mt-2 text-xs font-medium text-destructive">
+                    Die E-Mail-Adresse scheint ungültig zu sein.
+                  </p>
+                )}
               </div>
             </div>
             {error && (
