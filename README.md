@@ -1,6 +1,6 @@
 # Zahnfunnel
 
-Lead-Funnel für eine Zahnarztpraxis. Zwei Eingangspfade:
+Lead-Funnel für ExpatVantage — Zahnzusatzversicherungs-Beratung durch Alexander Fürtbauer. Zwei Eingangspfade:
 
 1. **Formular** (`POST /webhook/form`) — die Landingpage postet die ausgefüllten Anamnese-Daten hierher. Wir speichern den Lead, und je nach Einverständnis wird nach einer kurzen Verzögerung eine personalisierte WhatsApp-Template-Nachricht oder eine personalisierte E-Mail verschickt (Text jeweils vom Claude-Modell generiert).
 2. **Direkter WhatsApp-Klick** (`POST /webhook/whatsapp`) — Meta leitet eingehende WhatsApp-Nachrichten hierher. Schreibt ein neuer Lead zum ersten Mal, speichern wir ihn und antworten sofort mit einem Standardtext (erlaubt im 24h-Window).
@@ -45,7 +45,7 @@ python3 -m venv .venv
 | `WA_ACCESS_TOKEN` | Meta System-User Token (permanent) |
 | `WA_VERIFY_TOKEN` | Frei wählbar; musst du im Meta Webhook-Setup identisch eintragen |
 | `GMAIL_FROM_ADDRESS` | Absender-Adresse |
-| `PRAXIS_NAME` | wird in AI-Prompts + Auto-Reply-Text verwendet |
+| `BERATER_NAME` / `BERATER_FIRMA` / `BERATER_TYP` | wird in AI-Prompts + Auto-Reply-Text verwendet |
 
 ## Einmalige externe Schritte
 

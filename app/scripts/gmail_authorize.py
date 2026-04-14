@@ -3,7 +3,7 @@
 Benutzung:
   1. credentials.json aus Google Cloud Console -> secrets/gmail_credentials.json
   2. python -m app.scripts.gmail_authorize
-  3. Browser öffnet sich, mit Praxis-Mail einloggen, Zugriff erlauben
+  3. Browser öffnet sich, mit ExpatVantage-Mail einloggen, Zugriff erlauben
   4. secrets/gmail_token.json wird erzeugt — die App liest es beim Senden.
 
 Token bleibt gültig solange Google den Refresh-Token nicht widerruft

@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Die produktive Anwendung (Landingpage + Formular) wird über **Lovable** deployed. Dieses Repo ist ausschließlich für die Entwicklung des GitHub-Codes gedacht — hier werden keine Deploy-Schritte ausgeführt. Änderungen landen per Git im Repo; Lovable zieht sich den Stand selbst.
 
+**Wichtig:** Aktuell existiert **quasi noch kein Backend** — nur Frontend-Funnel. Ein Backend kann bei Bedarf ergänzt werden, aber das passiert dann **komplett in Lovable** (nicht in diesem Repo / nicht auf diesem Server). Lovable ist Source of Truth für Deployment und Backend-Logik.
+
+**Environment Variables / Vantage-OS:** Es gibt eine separate Plattform **Vantage-OS** (liegt auf GitHub + Lovable), über deren OS-Dashboard Alex die Environment-Variablen zentral einstellt. Code in diesem Repo muss so gebaut sein, dass er seine Secrets/Config **aus diesen von Vantage-OS durchgereichten ENV-Variablen** liest — also keine hartcodierten Werte, keine eigenen Secret-Stores, sondern konsequent `os.environ` / Pydantic-Settings. Wenn Alex eine ENV im OS-Dashboard setzt, soll sie hier direkt ankommen und das System damit laufen.
+
 ## Commands
 
 ```bash
