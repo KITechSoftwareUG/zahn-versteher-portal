@@ -1,6 +1,7 @@
 import MultiStepForm from "@/components/MultiStepForm";
 import AssistantPanel from "@/components/AssistantPanel";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import EnvPing from "@/components/EnvPing";
 import { Link } from "react-router-dom";
 // HINWEIS: Dieses Bild zeigt aktuell noch den alten Platzhalter. Bitte durch
 // ein echtes Foto von Alexander Fürtbauer ersetzen (gleicher Pfad/Dateiname).
@@ -21,6 +22,7 @@ const Index = () => {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+      <EnvPing />
       {/* Header */}
       <header className="sticky top-0 z-50 flex justify-center border-b border-slate-100 bg-white/80 px-4 py-4 backdrop-blur-md md:px-10 lg:px-20">
         <div className="flex max-w-[1280px] flex-1 items-center justify-between whitespace-nowrap">
