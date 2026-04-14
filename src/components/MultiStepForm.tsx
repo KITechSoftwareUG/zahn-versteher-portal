@@ -94,8 +94,19 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
     try {
+      // Mapping auf das Vantage-OS-Backend-Schema:
+      // - phone (Pflicht) statt telnr
+      // - email statt mail
+      // - source = "website"
+      // Alle restlichen Felder (Anamnese, Einwilligungen, Behandlungsdetails)
+      // packt das Backend automatisch in den Spalten-Wert "meta" als JSON.
+      const { name, telnr, mail, ...rest } = data;
       const payload = {
-        ...data,
+        name,
+        phone: telnr,
+        email: mail || undefined,
+        source: "website",
+        ...rest,
         ersatz_typ: data.ersatz_typ.join(", "),
       };
       const headers: Record<string, string> = { "Content-Type": "application/json" };
