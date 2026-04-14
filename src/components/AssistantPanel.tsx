@@ -30,32 +30,32 @@ const AssistantPanel = ({ currentStep }: AssistantPanelProps) => {
   const info = stepInfo[currentStep] || stepInfo[0];
 
   return (
-    <>
-      {/* Context explanation */}
-      <div className="glass-panel rounded-2xl p-6">
-        <div className="mb-3 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-            <span className="material-symbols-outlined text-xl text-primary">auto_awesome</span>
-          </div>
-          <h4 className="font-display text-sm font-bold text-foreground">{info.title}</h4>
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      {/* Context explanation — Deep Teal */}
+      <div className="flex items-start gap-5 rounded-2xl border border-deep-teal/10 bg-deep-teal/5 p-7">
+        <div className="rounded-xl bg-deep-teal p-2.5 text-white shadow-lg">
+          <span className="material-symbols-outlined text-xl">psychology</span>
         </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">{info.explanation}</p>
+        <div>
+          <h4 className="mb-2 font-bold leading-tight text-primary">{info.title}</h4>
+          <p className="text-sm leading-relaxed text-slate-500">{info.explanation}</p>
+        </div>
       </div>
 
-      {/* Privacy note */}
-      <div className="glass-panel rounded-2xl p-6">
-        <div className="mb-3 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
-            <span className="material-symbols-outlined text-xl text-muted-foreground">shield_person</span>
-          </div>
-          <h4 className="font-display text-sm font-bold text-foreground">Maximale Sicherheit</h4>
+      {/* Privacy note — Neutral */}
+      <div className="flex items-start gap-5 rounded-2xl border border-slate-100 bg-white p-7">
+        <div className="rounded-xl bg-slate-100 p-2.5 text-slate-600">
+          <span className="material-symbols-outlined text-xl">shield_person</span>
         </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Ihre Daten verlassen den deutschen Server nicht und werden nach DSGVO-Standard
-          verschlüsselt verarbeitet. Keine Weitergabe an Dritte.
-        </p>
+        <div>
+          <h4 className="mb-2 font-bold leading-tight text-primary">Diskretion garantiert</h4>
+          <p className="text-sm leading-relaxed text-slate-500">
+            Ihre Daten werden nach DSGVO-Standard verschlüsselt verarbeitet und nicht an
+            Dritte weitergegeben.
+          </p>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

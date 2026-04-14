@@ -20,126 +20,137 @@ const Index = () => {
   const totalSteps = 4;
 
   return (
-    <div className="min-h-screen">
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
       {/* Header */}
-      <header className="sticky top-0 z-50 glass-panel rounded-none">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-2xl text-primary">health_and_safety</span>
-            <span className="font-display text-lg font-bold text-foreground">
-              Expat<span className="gradient-text">Vantage</span>
-            </span>
+      <header className="sticky top-0 z-50 flex justify-center border-b border-slate-100 bg-white/80 px-4 py-4 backdrop-blur-md md:px-10 lg:px-20">
+        <div className="flex max-w-[1280px] flex-1 items-center justify-between whitespace-nowrap">
+          <div className="flex items-center gap-3">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-white">
+              <span className="material-symbols-outlined text-xl">dentistry</span>
+            </div>
+            <h1 className="text-xl font-bold tracking-tight text-primary">
+              Expat<span className="accent-text">Vantage</span>
+            </h1>
           </div>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
-            <a href="#vorteile" className="transition-colors hover:text-foreground">Vorteile</a>
-            <a href="#ueber-mich" className="transition-colors hover:text-foreground">Über mich</a>
-            <a href="#faq" className="transition-colors hover:text-foreground">Ratgeber</a>
-          </nav>
-          <a
-            {...ctaProps}
-            className="rounded-full gradient-btn px-5 py-2 text-sm font-semibold"
-          >
-            Kostenlose Erstberatung
-          </a>
+          <div className="flex flex-1 items-center justify-end gap-8">
+            <nav className="hidden items-center gap-8 md:flex">
+              <a href="#vorteile" className="text-sm font-semibold text-slate-500 transition-colors hover:text-accent">Vorteile</a>
+              <a href="#ueber-mich" className="text-sm font-semibold text-slate-500 transition-colors hover:text-accent">Über mich</a>
+              <a href="#faq" className="text-sm font-semibold text-slate-500 transition-colors hover:text-accent">Ratgeber</a>
+            </nav>
+            <a
+              {...ctaProps}
+              className="flex h-11 min-w-[140px] cursor-pointer items-center justify-center rounded-full bg-primary px-6 text-sm font-bold tracking-wide text-white shadow-md transition-all hover:bg-slate-800"
+            >
+              Gratis Beratung
+            </a>
+          </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
-        <div className="grid items-start gap-12 lg:grid-cols-[420px,1fr] lg:gap-16">
-          {/* Left: Broker Card */}
-          <div className="lg:sticky lg:top-24">
-            {/* Portrait Card */}
-            <div className="relative mb-8 overflow-hidden rounded-2xl shadow-xl">
-              <img
-                src={portraitImg}
-                alt="Alexander Fürtbauer – Finanzberater bei ExpatVantage"
-                className="h-[420px] w-full object-cover"
-              />
-              <div className="broker-card-gradient absolute inset-0" />
-              <div className="absolute bottom-0 left-0 p-6">
-                <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-primary">
-                  Ihr persönlicher Berater
+      <main className="flex flex-1 justify-center px-4 py-12 md:px-10 lg:px-20 lg:py-20">
+        <div className="flex max-w-[1280px] flex-1 flex-col">
+          <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-16">
+            {/* Left: Broker + Headline + Stats */}
+            <div className="flex flex-col gap-10 lg:sticky lg:top-32 lg:col-span-5">
+              {/* Portrait with floating broker card */}
+              <div className="relative">
+                <div className="aspect-[4/5] w-full overflow-hidden rounded-2xl bg-slate-100 shadow-2xl ring-1 ring-slate-200/50">
+                  <img
+                    src={portraitImg}
+                    alt="Alexander Fürtbauer – Finanzberater bei ExpatVantage"
+                    className="h-full w-full object-cover contrast-[1.05] grayscale-[0.2] transition-all duration-700 hover:grayscale-0"
+                  />
+                </div>
+                <div className="absolute -bottom-6 left-6 right-6 rounded-xl border border-slate-100 bg-white p-6 shadow-xl md:left-auto md:-right-8 md:w-72">
+                  <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-accent">
+                    Ihr Berater
+                  </p>
+                  <p className="text-2xl font-bold text-primary">Alexander Fürtbauer</p>
+                  <p className="text-sm font-medium text-slate-500">Finanzberater · ExpatVantage</p>
+                </div>
+              </div>
+
+              {/* Headline */}
+              <div className="mt-6 flex flex-col gap-6">
+                <h2 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-primary md:text-5xl">
+                  Exzellenter Schutz
+                  <br />
+                  <span className="accent-italic">für Ihr Lächeln.</span>
+                </h2>
+                <p className="max-w-lg text-lg leading-relaxed text-slate-500">
+                  Maßgeschneiderte Absicherung durch unabhängige Expertise. Ich finde für Sie die
+                  Zahnzusatzversicherung, die wirklich zu Ihrer Situation passt – auch als Expat in Deutschland.
                 </p>
-                <h2 className="font-display text-xl font-bold text-white">Alexander Fürtbauer</h2>
-                <p className="mt-0.5 text-sm text-white/80">Finanzberater · ExpatVantage</p>
+              </div>
+
+              {/* Stats */}
+              <div className="flex flex-wrap gap-6">
+                <div className="flex items-center gap-4 border-r border-slate-200 py-3 pr-8">
+                  <div className="text-accent">
+                    <span className="material-symbols-outlined text-3xl">verified</span>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold leading-none text-primary">10+</p>
+                    <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      Jahre Expertise
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 py-3">
+                  <div className="text-accent">
+                    <span className="material-symbols-outlined text-3xl">handshake</span>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold leading-none text-primary">100%</p>
+                    <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      Unabhängig
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Headline */}
-            <div className="hidden lg:block">
-              <p className="mb-3 text-xs font-bold uppercase tracking-widest text-primary">
-                Zahnzusatzversicherung
-              </p>
-              <h1 className="font-display text-4xl font-extrabold leading-tight text-foreground xl:text-[2.6rem]">
-                Zahnersatz kostet bis zu{" "}
-                <span className="gradient-text">6.000 €</span>
-                <br />
-                – die Kasse zahlt nur einen Bruchteil.
-              </h1>
-              <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-                Ich finde für Sie die passende Zahnzusatzversicherung – unabhängig,
-                ohne Verkaufsdruck und auch dann, wenn Sie als Expat erst seit
-                Kurzem in Deutschland leben. In 60 Sekunden zum persönlichen Angebot.
-              </p>
+            {/* Right: Form + Assistant cards */}
+            <div className="flex flex-col gap-6 lg:col-span-7" id="formular">
+              <MultiStepForm onStepChange={setCurrentStep} />
+              <AssistantPanel currentStep={currentStep} totalSteps={totalSteps} />
             </div>
-          </div>
-
-          {/* Right: Form */}
-          <div id="formular">
-            {/* Mobile headline */}
-            <div className="mb-8 lg:hidden">
-              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-primary">
-                Zahnzusatzversicherung
-              </p>
-              <h1 className="font-display text-2xl font-extrabold leading-tight text-foreground sm:text-3xl">
-                Zahnersatz kostet bis zu{" "}
-                <span className="gradient-text">6.000 €</span> – die Kasse zahlt nur einen Bruchteil.
-              </h1>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                In 60 Sekunden zum unverbindlichen Angebot – unabhängig und ohne Verkaufsdruck.
-              </p>
-            </div>
-            <MultiStepForm onStepChange={setCurrentStep} />
           </div>
         </div>
-
-        {/* Bottom row: Stats + Assistant Cards */}
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Stats */}
-          <div className="glass-panel rounded-2xl p-6">
-            <div className="mb-3 flex items-center gap-2">
-              <span className="material-symbols-outlined text-xl text-primary">verified</span>
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Erfahrung</span>
-            </div>
-            <p className="font-display text-2xl font-bold text-foreground">10+ Jahre</p>
-            <p className="mt-1 text-xs text-muted-foreground">in der deutschen Finanz- und Versicherungsbranche</p>
-          </div>
-          <div className="glass-panel rounded-2xl p-6">
-            <div className="mb-3 flex items-center gap-2">
-              <span className="material-symbols-outlined text-xl text-primary">handshake</span>
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Unabhängig</span>
-            </div>
-            <p className="font-display text-2xl font-bold text-foreground">100 % objektiv</p>
-            <p className="mt-1 text-xs text-muted-foreground">kein Verkaufsdruck, kein Provisions-Bias</p>
-          </div>
-
-          {/* Assistant Cards */}
-          <AssistantPanel currentStep={currentStep} totalSteps={totalSteps} />
-        </div>
-      </section>
+      </main>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-muted/30 py-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6">
-          <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-base">copyright</span>
-            <span>2024 ExpatVantage · Alexander Fürtbauer — Finanzberatung für Expats in Deutschland</span>
+      <footer className="border-t border-slate-100 bg-white px-4 py-12 md:px-10 lg:px-20">
+        <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-8 md:flex-row">
+          <div className="flex items-center gap-3 text-slate-400">
+            <span className="material-symbols-outlined text-lg">copyright</span>
+            <span className="text-xs font-medium uppercase tracking-wider">
+              2024 ExpatVantage · Alexander Fürtbauer — Finanzberatung für Expats
+            </span>
           </div>
-          <div className="flex gap-4">
-            <a href="https://expatvantage.de" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">expatvantage.de</a>
-            <Link to="/impressum" className="text-primary hover:underline">Impressum</Link>
-            <Link to="/datenschutz" className="text-primary hover:underline">Datenschutz</Link>
+          <div className="flex gap-8">
+            <a
+              href="https://expatvantage.de"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-accent"
+            >
+              expatvantage.de
+            </a>
+            <Link
+              to="/impressum"
+              className="text-xs font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-accent"
+            >
+              Impressum
+            </Link>
+            <Link
+              to="/datenschutz"
+              className="text-xs font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-accent"
+            >
+              Datenschutz
+            </Link>
           </div>
         </div>
       </footer>

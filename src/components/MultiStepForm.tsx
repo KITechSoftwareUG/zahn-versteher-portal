@@ -25,6 +25,9 @@ interface FormData {
   telnr: string;
   mail: string;
   einverstaendnis: string;
+  /** Ausdrückliche Einwilligung in Verarbeitung von Gesundheitsdaten (Art. 9 Abs. 2 lit. a DSGVO).
+      Pflicht, weil Anamnese-Fragen besondere Kategorien personenbezogener Daten sind. */
+  gesundheitsdaten_einwilligung: boolean;
 }
 
 const TOTAL_STEPS = 4;
@@ -55,6 +58,7 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
     telnr: "",
     mail: "",
     einverstaendnis: "",
+    gesundheitsdaten_einwilligung: false,
   });
 
   const progress = ((step + 1) / TOTAL_STEPS) * 100;
@@ -77,6 +81,8 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
       // Ohne WhatsApp-Consent brauchen wir eine valide Mail für Kontakt.
       if (data.einverstaendnis === "nein" && !emailLooksValid(data.mail)) return false;
       if (data.mail.trim() !== "" && !emailLooksValid(data.mail)) return false;
+      // Pflicht-Einwilligung in Verarbeitung der Gesundheitsdaten (Art. 9 DSGVO)
+      if (!data.gesundheitsdaten_einwilligung) return false;
       return true;
     }
     return false;
@@ -146,18 +152,18 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
 
   if (submitted) {
     return (
-      <div className="glass-panel rounded-2xl p-8 text-center">
-        <span className="material-symbols-outlined mb-4 text-5xl text-primary">check_circle</span>
-        <h3 className="mb-2 font-display text-2xl font-bold text-foreground">
+      <div className="rounded-3xl border border-slate-100 bg-white p-10 text-center shadow-2xl">
+        <span className="material-symbols-outlined mb-4 text-5xl text-accent">check_circle</span>
+        <h3 className="mb-2 font-display text-2xl font-bold text-primary">
           Vielen Dank, {data.name}!
         </h3>
-        <p className="text-muted-foreground">
+        <p className="text-slate-500">
           Ihre Angaben sind eingegangen. Auf Basis Ihrer zahnmedizinischen Situation
           erstelle ich Ihnen ein persönliches Angebot für die passende
           Zahnzusatzversicherung und melde mich
           {data.einverstaendnis === "ja" ? " per WhatsApp" : " per E-Mail"} bei Ihnen.
         </p>
-        <p className="mt-3 text-sm text-muted-foreground">
+        <p className="mt-3 text-sm font-semibold text-slate-400">
           Alexander Fürtbauer | ExpatVantage
         </p>
       </div>
@@ -180,18 +186,18 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
     value: string;
     onChange: (v: string) => void;
   }) => (
-    <div className="mb-4">
-      <p className="mb-2 text-sm font-medium text-foreground">{label}</p>
+    <div className="mb-5">
+      <p className="mb-2 text-sm font-semibold text-primary">{label}</p>
       <div className="flex gap-3">
         {["ja", "nein"].map((v) => (
           <button
             key={v}
             type="button"
             onClick={() => onChange(v)}
-            className={`rounded-xl border px-6 py-2.5 text-sm font-medium transition-all ${
+            className={`rounded-xl border-2 px-6 py-2.5 text-sm font-semibold transition-all ${
               value === v
-                ? "border-primary bg-primary/5 text-primary shadow-sm"
-                : "border-border text-muted-foreground hover:border-primary/30"
+                ? "border-accent bg-accent/5 text-primary shadow-sm"
+                : "border-slate-100 bg-slate-50/30 text-slate-500 hover:border-accent/30"
             }`}
           >
             {v === "ja" ? "Ja" : "Nein"}
@@ -206,23 +212,29 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
   );
 
   return (
-    <div className="glass-panel overflow-hidden rounded-2xl">
+    <div className="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl">
       {/* Header */}
-      <div className="bg-[hsl(var(--warm-accent))] px-6 py-5 sm:px-8">
-        <div className="mb-1 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          <span>Schritt {step + 1} von {TOTAL_STEPS}</span>
-          <span className="text-primary">{Math.round(progress)}%</span>
+      <div className="border-b border-slate-100 bg-slate-50/50 px-8 py-6 sm:px-10">
+        <div className="mb-4 flex items-end justify-between">
+          <div>
+            <h3 className="font-display text-lg font-bold text-primary">
+              {stepTitles[step]}
+            </h3>
+            <p className="mt-1 text-xs font-medium uppercase tracking-widest text-slate-400">
+              Schritt {step + 1} von {TOTAL_STEPS}
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="text-lg font-bold text-primary">{Math.round(progress)}%</span>
+          </div>
         </div>
-        <h3 className="font-display text-base font-bold text-foreground">
-          {stepTitles[step]}
-        </h3>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-border">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
           <div
-            className="h-full rounded-full bg-primary transition-all duration-500"
+            className="h-full rounded-full bg-accent transition-all duration-1000"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="mt-4 flex items-center gap-2 text-xs italic text-slate-400">
           <span className="material-symbols-outlined text-sm">timer</span>
           <span>Nur noch ca. {Math.max(30, (TOTAL_STEPS - step) * 30)} Sekunden bis zu Ihrem persönlichen Angebot</span>
         </div>
@@ -231,11 +243,11 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
             haben das komplette Formular durchzugehen. Nur sichtbar wenn
             VITE_WHATSAPP_NUMBER gesetzt ist. */}
         {whatsappHref && (
-          <div className="mt-4 flex flex-col items-stretch gap-2 rounded-xl border border-white/70 bg-white/70 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-            <div className="flex items-start gap-2 text-xs text-muted-foreground sm:items-center">
-              <span className="material-symbols-outlined text-base text-primary">forum</span>
+          <div className="mt-4 flex flex-col items-stretch gap-2 rounded-xl border border-slate-100 bg-white p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+            <div className="flex items-start gap-2 text-xs text-slate-500 sm:items-center">
+              <span className="material-symbols-outlined text-base text-accent">forum</span>
               <span>
-                <span className="font-semibold text-foreground">Keine Lust auf Fragen?</span>{" "}
+                <span className="font-semibold text-primary">Keine Lust auf Fragen?</span>{" "}
                 Schreiben Sie mir direkt auf WhatsApp.
               </span>
             </div>
@@ -253,7 +265,7 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
       </div>
 
       {/* Content */}
-      <div className="px-6 py-6 sm:px-8">
+      <div className="px-8 py-8 sm:px-10">
         {/* Step 0 — Behandlungen */}
         {step === 0 && (
           <div>
@@ -302,10 +314,10 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
                 {["Kronen", "Brücken", "Implantate", "Prothesen"].map((typ) => (
                   <label
                     key={typ}
-                    className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all ${
+                    className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-all ${
                       data.ersatz_typ.includes(typ)
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-border hover:border-primary/30"
+                        ? "border-accent bg-accent/5 shadow-sm"
+                        : "border-slate-100 bg-slate-50/30 hover:border-accent/30"
                     }`}
                   >
                     <Checkbox
@@ -393,7 +405,7 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
                   onChange={(e) => setData({ ...data, mail: e.target.value })}
                 />
               </div>
-              <div className="rounded-xl border border-border p-4">
+              <div className="rounded-xl border-2 border-slate-100 bg-slate-50/30 p-5">
                 <JaNeinFrage
                   label="Dürfen wir Sie per WhatsApp kontaktieren?"
                   value={data.einverstaendnis}
@@ -414,6 +426,36 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
                   </p>
                 )}
               </div>
+
+              {/* Pflicht-Einwilligung in Verarbeitung der Gesundheitsdaten
+                  nach Art. 9 Abs. 2 lit. a DSGVO. Ohne diese Einwilligung
+                  dürfen wir die Anamnese-Antworten gar nicht verarbeiten. */}
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border-2 border-slate-100 bg-slate-50/30 p-5">
+                <Checkbox
+                  className="mt-0.5"
+                  checked={data.gesundheitsdaten_einwilligung}
+                  onCheckedChange={(c) =>
+                    setData({ ...data, gesundheitsdaten_einwilligung: c === true })
+                  }
+                />
+                <span className="text-xs leading-relaxed text-slate-500">
+                  Ich willige ausdrücklich ein, dass meine Angaben zur zahnmedizinischen
+                  Situation (besondere Kategorien personenbezogener Daten gemäß Art.&nbsp;9
+                  DSGVO) verarbeitet werden, um mir ein passendes Angebot für eine
+                  Zahnzusatzversicherung erstellen zu können. Ich kann diese Einwilligung
+                  jederzeit mit Wirkung für die Zukunft widerrufen. Weitere Informationen
+                  in der{" "}
+                  <a
+                    href="/datenschutz"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary underline"
+                  >
+                    Datenschutzerklärung
+                  </a>
+                  .
+                </span>
+              </label>
             </div>
             {error && (
               <p className="mt-4 text-sm font-medium text-destructive">{error}</p>
@@ -422,28 +464,28 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
         )}
 
         {/* Navigation */}
-        <div className="mt-8 flex items-center justify-between">
+        <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-8">
           <button
             onClick={handleBack}
             disabled={step === 0}
-            className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+            className="text-sm font-bold uppercase tracking-widest text-slate-400 transition-colors hover:text-primary disabled:opacity-30"
           >
-            <span className="material-symbols-outlined text-lg">arrow_back</span>
             Zurück
           </button>
           <Button
             onClick={handleNext}
             disabled={!canNext() || submitting}
-            size="lg"
-            className="rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25"
+            className="group flex h-14 min-w-[180px] cursor-pointer items-center justify-center gap-3 rounded-full bg-primary px-8 text-base font-bold tracking-wide text-white transition-all hover:bg-slate-800 hover:shadow-xl"
           >
             {submitting
               ? "Wird gesendet..."
               : step === TOTAL_STEPS - 1
                 ? "Absenden"
-                : "Weiter"}
+                : "Nächster Schritt"}
             {!submitting && (
-              <span className="material-symbols-outlined ml-1 text-lg">east</span>
+              <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">
+                arrow_forward
+              </span>
             )}
           </Button>
         </div>

@@ -54,6 +54,16 @@ async def receive_form(request: Request) -> dict[str, Any]:
     if not telnr:
         return {"ok": False, "error": "telnr missing"}
 
+    # Pflicht-Einwilligung in Verarbeitung von Gesundheitsdaten (Art. 9 Abs. 2 lit. a DSGVO).
+    # Ohne explizite Einwilligung dürfen wir die Anamnese-Antworten gar nicht speichern.
+    if not bool(body.get("gesundheitsdaten_einwilligung")):
+        log.warning("form submitted without health-data consent — rejecting")
+        return {
+            "ok": False,
+            "error": "health_data_consent_required",
+            "message": "Die Verarbeitung der zahnmedizinischen Angaben erfordert Ihre ausdrückliche Einwilligung.",
+        }
+
     anliegen = build_anliegen_summary(body)
     payload_raw = json.dumps(body, ensure_ascii=False)
 

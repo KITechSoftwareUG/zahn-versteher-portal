@@ -19,7 +19,7 @@ const LegalLayout = ({ title, children }: LegalLayoutProps) => {
           <Link to="/" className="flex items-center gap-2">
             <span className="material-symbols-outlined text-2xl text-primary">health_and_safety</span>
             <span className="font-display text-lg font-bold text-foreground">
-              Expat<span className="gradient-text">Vantage</span>
+              Expat<span className="accent-text">Vantage</span>
             </span>
           </Link>
           <Link

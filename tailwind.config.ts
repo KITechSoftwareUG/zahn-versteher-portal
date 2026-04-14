@@ -13,8 +13,8 @@ export default {
       },
     },
     fontFamily: {
-      display: ["Outfit", "sans-serif"],
-      body: ["Plus Jakarta Sans", "sans-serif"],
+      display: ["Montserrat", "sans-serif"],
+      body: ["Inter", "sans-serif"],
     },
     extend: {
       colors: {
@@ -44,6 +44,7 @@ export default {
           foreground: "hsl(var(--accent-foreground))",
         },
         "warm-accent": "hsl(var(--warm-accent))",
+        "deep-teal": "hsl(var(--deep-teal))",
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
