@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { getWhatsAppLink } from "@/lib/whatsapp";
+import { buildAnliegenSummary, buildTracking } from "@/lib/leadTracking";
 
 interface FormData {
   // Step 0 — Behandlungen
@@ -42,6 +43,8 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  // Zeitpunkt des ersten Renders — wird fürs Tracking (duration_seconds) genutzt.
+  const formStartedAt = useRef<Date>(new Date());
   const [data, setData] = useState<FormData>({
     laufende_behandlungen: "",
     geplante_behandlungen: "",
@@ -106,6 +109,11 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
         phone: telnr,
         email: mail || undefined,
         source: "website",
+        // Klartext-Zusammenfassung fürs Dashboard — ein Satz statt 13 ja/nein-Felder
+        anliegen_summary: buildAnliegenSummary(data),
+        // Tracking: wo kam der Lead her, wie lange hat er gebraucht, welches Gerät
+        tracking: buildTracking(formStartedAt.current),
+        // Alle Einzel-Antworten (fürs Dashboard wenn Details gewünscht)
         ...rest,
         ersatz_typ: data.ersatz_typ.join(", "),
       };
