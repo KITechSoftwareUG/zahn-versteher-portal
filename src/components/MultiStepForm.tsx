@@ -119,6 +119,22 @@ const MultiStepForm = ({ onStepChange }: MultiStepFormProps) => {
         body: JSON.stringify(payload),
         signal: controller.signal,
       });
+
+      // Spezialfall: Backend speichert den Lead, versucht danach aber einen
+      // WhatsApp-Template-Versand. Wenn der WhatsApp-Access-Token im OS
+      // noch nicht gesetzt ist, liefert das Backend 502 + WhatsApp-Fehler.
+      // Der Lead IST in diesem Fall schon in der DB — wir werten das als
+      // Erfolg, damit der Nutzer nicht irritiert wird. Alexander kann ihn
+      // manuell aus dem OS-Dashboard heraus kontaktieren.
+      if (res.status === 502) {
+        const text = await res.text();
+        if (text.includes("WhatsApp")) {
+          console.warn("[form] Lead gespeichert, aber WhatsApp-Versand fehlgeschlagen:", text);
+          setSubmitted(true);
+          return;
+        }
+      }
+
       if (!res.ok) {
         if (res.status >= 500) {
           throw new Error("Der Server ist gerade nicht erreichbar. Bitte versuchen Sie es in einem Moment erneut.");
