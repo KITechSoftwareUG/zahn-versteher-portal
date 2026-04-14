@@ -1,9 +1,19 @@
 import MultiStepForm from "@/components/MultiStepForm";
 import AssistantPanel from "@/components/AssistantPanel";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import { Link } from "react-router-dom";
 // HINWEIS: Dieses Bild zeigt aktuell noch den alten Platzhalter. Bitte durch
 // ein echtes Foto von Alexander Fürtbauer ersetzen (gleicher Pfad/Dateiname).
 import portraitImg from "@/assets/vermittler-portrait.png";
 import { useState } from "react";
+
+// Wenn VITE_CALENDLY_URL gesetzt ist, öffnen die "Kostenlose Erstberatung"-
+// Buttons Calendly in einem neuen Tab. Sonst scrollen sie zum Formular.
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || "";
+
+const ctaProps = CALENDLY_URL
+  ? { href: CALENDLY_URL, target: "_blank", rel: "noopener noreferrer" as const }
+  : { href: "#formular" };
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -26,7 +36,7 @@ const Index = () => {
             <a href="#faq" className="transition-colors hover:text-foreground">Ratgeber</a>
           </nav>
           <a
-            href="#formular"
+            {...ctaProps}
             className="rounded-full gradient-btn px-5 py-2 text-sm font-semibold"
           >
             Kostenlose Erstberatung
@@ -128,11 +138,14 @@ const Index = () => {
           </div>
           <div className="flex gap-4">
             <a href="https://expatvantage.de" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">expatvantage.de</a>
-            <a href="#" className="text-primary hover:underline">Impressum</a>
-            <a href="#" className="text-primary hover:underline">Datenschutz</a>
+            <Link to="/impressum" className="text-primary hover:underline">Impressum</Link>
+            <Link to="/datenschutz" className="text-primary hover:underline">Datenschutz</Link>
           </div>
         </div>
       </footer>
+
+      {/* Floating WhatsApp-Button (nur sichtbar wenn VITE_WHATSAPP_NUMBER gesetzt) */}
+      <WhatsAppButton />
     </div>
   );
 };
